@@ -1,7 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:typing/result.dart';
+import 'dart:async';
+import 'dart:math';
 
 List<int> write = [];
 
@@ -21,19 +22,58 @@ class TestScreen extends StatefulWidget {
 class _TestScreenState extends State<TestScreen> {
   Random rnd = Random();
   int filenum = 1;
+  late Timer timer;
+  int _start = 60;
+
+  void startTimer() {
+    const oneSec = Duration(seconds: 1);
+    timer = Timer.periodic(
+      oneSec,
+      (Timer timer) {
+        if (_start == 0) {
+          setState(() {
+            timer.cancel();
+            end();
+          });
+        } else {
+          setState(() {
+            _start--;
+          });
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     write = [];
     filenum = rnd.nextInt(49) + 1;
+    if (widget.type == '1m') {
+      _start = 60;
+    } else if (widget.type == '3m') {
+      _start = 3 * 60;
+    } else if (widget.type == '3m') {
+      _start = 5 * 60;
+    }
+    startTimer();
   }
 
   endOne() {
     setState(() {});
   }
 
+  end() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(),
+      ),
+    );
+  }
+
   Future<List<String>> loadFile() async {
-    var a = await rootBundle.loadString('assets/p/$filenum.txt');
+    var a = await rootBundle.loadString('assets/short/$filenum.txt');
     var b = a.split('\n');
     return b;
   }
@@ -65,35 +105,46 @@ class _TestScreenState extends State<TestScreen> {
                 )
               ],
             ),
-            FutureBuilder(
-              future: loadFile(),
-              builder: (context, AsyncSnapshot<List<String>> snapshot) {
-                var n = 0;
-                if (snapshot.hasData) {
-                  print(snapshot.data!.length);
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          for (var i = 0; i <= snapshot.data!.length - 2; i++)
-                            TText(
-                              text: snapshot.data![i],
-                              numb: i,
-                              refresh: endOne,
+            const Spacer(),
+            FractionallySizedBox(
+              widthFactor: 0.7,
+              child: Column(
+                children: [
+                  Text(_start.toString()),
+                  FutureBuilder(
+                    future: loadFile(),
+                    builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                      if (snapshot.hasData) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 20, bottom: 50),
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                for (var i = 0;
+                                    i <= snapshot.data!.length - 2;
+                                    i++)
+                                  TText(
+                                    text: snapshot.data![i],
+                                    numb: i,
+                                    refresh: endOne,
+                                    last: i == snapshot.data!.length - 2,
+                                  ),
+                              ],
                             ),
-                        ],
-                      ),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            )
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const Spacer(),
           ],
         ),
       ),
@@ -102,13 +153,18 @@ class _TestScreenState extends State<TestScreen> {
 }
 
 class TText extends StatefulWidget {
-  TText(
-      {Key? key, required this.text, required this.numb, required this.refresh})
-      : super(key: key);
+  TText({
+    Key? key,
+    required this.text,
+    required this.numb,
+    required this.refresh,
+    required this.last,
+  }) : super(key: key);
 
   String text;
   int numb;
   VoidCallback refresh;
+  bool last;
 
   @override
   _TTextState createState() => _TTextState();
@@ -184,6 +240,9 @@ class _TTextState extends State<TText> {
               write.add(widget.numb);
               active = false;
               visibility = false;
+              if (widget.last) {
+                Navigator.pop(context);
+              }
             });
             widget.refresh();
           }
@@ -191,12 +250,20 @@ class _TTextState extends State<TText> {
         child: Text.rich(
           TextSpan(
             children: [
-              TextSpan(
-                text: written,
-                style: const TextStyle(
-                  color: Color(0xFF51E724),
+              for (var i = 0; i <= written.length - 1; i++)
+                TextSpan(
+                  text: wanted[i],
+                  style: TextStyle(
+                    color: wanted[i] == written[i]
+                        ? const Color(0xFF51E724)
+                        : Colors.red,
+                    decoration: wanted[i] == written[i]
+                        ? TextDecoration.none
+                        : wanted[i] == ' '
+                            ? TextDecoration.underline
+                            : TextDecoration.none,
+                  ),
                 ),
-              ),
               TextSpan(
                 text: now,
                 style: TextStyle(

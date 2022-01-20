@@ -33,4 +33,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/p/
+    - assets/short/
+    - assets/medium/
+    - assets/long/

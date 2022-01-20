@@ -1,3 +1,4 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -11,7 +12,69 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return const LineChartSample2();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            const SizedBox(width: 20.0, height: 100.0),
+            const Text(
+              'Test your ',
+              style: TextStyle(fontSize: 43.0),
+            ),
+            const SizedBox(width: 20.0, height: 100.0),
+            DefaultTextStyle(
+              style: const TextStyle(
+                fontSize: 40.0,
+              ),
+              child: AnimatedTextKit(
+                animatedTexts: [
+                  RotateAnimatedText('Typing Speed'),
+                  RotateAnimatedText('Typing Accuracy'),
+                  RotateAnimatedText('Typing Skills'),
+                ],
+                onTap: () {
+                  print("Tap Event");
+                },
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          width: 250.0,
+          child: DefaultTextStyle(
+            style: const TextStyle(
+              fontSize: 30.0,
+            ),
+            child: AnimatedTextKit(
+              pause: const Duration(milliseconds: 1500),
+              animatedTexts: [
+                TypewriterAnimatedText(
+                  'Learn to type',
+                  speed: const Duration(milliseconds: 1000),
+                ),
+                TypewriterAnimatedText(
+                  'Train your fingers',
+                  speed: const Duration(milliseconds: 1000),
+                ),
+                TypewriterAnimatedText(
+                  'Test your typing speed',
+                  speed: const Duration(milliseconds: 1000),
+                ),
+                TypewriterAnimatedText(
+                  'Type faster',
+                  speed: const Duration(milliseconds: 1000),
+                ),
+              ],
+              onTap: () {
+                print("Tap Event");
+              },
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
