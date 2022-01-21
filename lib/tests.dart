@@ -1,6 +1,8 @@
+import 'package:path_provider/path_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:typing/test.dart';
+import 'dart:io';
 
 class Tests extends StatefulWidget {
   const Tests({Key? key}) : super(key: key);
@@ -43,17 +45,53 @@ class _TestsState extends State<Tests> {
   }
 }
 
-class TestCard extends StatelessWidget {
+class TestCard extends StatefulWidget {
   TestCard({
     Key? key,
     required this.title,
     required this.type,
     required this.file,
   }) : super(key: key);
-
   String title;
   String type;
   String file;
+
+  @override
+  _TestCardState createState() => _TestCardState();
+}
+
+class _TestCardState extends State<TestCard> {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/test.txt');
+  }
+
+  Future<List<String>> readData(type) async {
+    try {
+      final file = await _localFile;
+      final contents = await file.readAsLines();
+      List<String> a = [];
+      for (var i in contents) {
+        if (i.split(',')[0] == type) {
+          a.add(i);
+        }
+      }
+      return a;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +109,7 @@ class TestCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  widget.title,
                   style: const TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ],
@@ -80,9 +118,29 @@ class TestCard extends StatelessWidget {
           const Spacer(),
           Container(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: const FractionallySizedBox(
+            child: FractionallySizedBox(
               widthFactor: 0.9,
-              child: LineChartSample2(),
+              child: FutureBuilder(
+                  future: readData(widget.type),
+                  builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                    if (snapshot.data!.length <= 1) {
+                      return TestChart(
+                        data: const [
+                          FlSpot(0, 1),
+                        ],
+                      );
+                    } else {
+                      return TestChart(
+                        data: [
+                          for (var i = 0; i <= snapshot.data!.length - 1; i++)
+                            FlSpot(
+                                i.toDouble(),
+                                (int.parse(snapshot.data![i].split(',')[1]))
+                                    .toDouble()),
+                        ],
+                      );
+                    }
+                  }),
             ),
           ),
           const Spacer(),
@@ -101,8 +159,7 @@ class TestCard extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => TestScreen(
-                            file: file,
-                            type: type,
+                            type: widget.type,
                           ),
                         ),
                       );
@@ -119,14 +176,15 @@ class TestCard extends StatelessWidget {
   }
 }
 
-class LineChartSample2 extends StatefulWidget {
-  const LineChartSample2({Key? key}) : super(key: key);
+class TestChart extends StatefulWidget {
+  TestChart({Key? key, required this.data}) : super(key: key);
+  List<FlSpot> data;
 
   @override
-  _LineChartSample2State createState() => _LineChartSample2State();
+  _TestChartState createState() => _TestChartState();
 }
 
-class _LineChartSample2State extends State<LineChartSample2> {
+class _TestChartState extends State<TestChart> {
   List<Color> gradientColors = [
     const Color(0xff23b6e6),
     const Color(0xff02d39a),
@@ -246,19 +304,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
       maxY: 70,
       lineBarsData: [
         LineChartBarData(
-          spots: const [
-            FlSpot(0, 36),
-            FlSpot(1, 32),
-            FlSpot(2, 35),
-            FlSpot(3, 33),
-            FlSpot(4, 40),
-            FlSpot(5, 35),
-            FlSpot(6, 42),
-            FlSpot(7, 35),
-            FlSpot(8, 38),
-            FlSpot(9, 40),
-            FlSpot(10, 36),
-          ],
+          spots: widget.data,
           isCurved: true,
           colors: gradientColors,
           barWidth: 5,

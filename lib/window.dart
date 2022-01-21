@@ -5,7 +5,6 @@ import 'package:typing/consts.dart';
 import 'package:typing/home.dart';
 import 'package:typing/training.dart';
 import 'package:typing/tests.dart';
-import 'package:typing/test.dart';
 import 'package:typing/settings.dart';
 
 class Window extends StatefulWidget {
@@ -44,7 +43,7 @@ class _NavigationState extends State<Navigation> {
     HomeScreen(),
     Tests(),
     TrainingScreen(),
-    SettingScreen(),
+    SettingScreen()
   ];
   int selectedIndex = 0;
 

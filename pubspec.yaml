@@ -12,16 +12,17 @@ dependencies:
   flutter:
     sdk: flutter
 
-  number_ticker: ^0.0.2+1
-  path_provider: ^2.0.8
-  show_up_animation: ^2.0.0
-  google_fonts: ^2.2.0
   shared_preferences: ^2.0.12
-  auto_size_text: ^3.0.0
-  animated_text_kit: ^4.2.1
+  show_up_animation: ^2.0.0
   bitsdojo_window: ^0.1.1+1
-  simple_tip: ^0.3.2
+  animated_text_kit: ^4.2.1
+  simple_animations: ^4.0.1
+  number_ticker: ^0.0.2+1
   side_navigation: ^0.0.7
+  auto_size_text: ^3.0.0
+  path_provider: ^2.0.8
+  google_fonts: ^2.2.0
+  simple_tip: ^0.3.2
   fl_chart: ^0.41.0
 
 dev_dependencies:

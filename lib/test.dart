@@ -5,14 +5,14 @@ import 'dart:async';
 import 'dart:math';
 
 List<int> write = [];
+List<List<int>> speed = [];
+List<int> nowtyp = [];
 
 class TestScreen extends StatefulWidget {
   TestScreen({
     Key? key,
-    required this.file,
     required this.type,
   }) : super(key: key);
-  String file;
   String type;
 
   @override
@@ -48,15 +48,23 @@ class _TestScreenState extends State<TestScreen> {
   void initState() {
     super.initState();
     write = [];
+    speed = [];
+    nowtyp = [];
     filenum = rnd.nextInt(49) + 1;
     if (widget.type == '1m') {
       _start = 60;
     } else if (widget.type == '3m') {
       _start = 3 * 60;
-    } else if (widget.type == '3m') {
+    } else if (widget.type == '5m') {
       _start = 5 * 60;
     }
     startTimer();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   endOne() {
@@ -64,10 +72,14 @@ class _TestScreenState extends State<TestScreen> {
   }
 
   end() {
+    speed.add(nowtyp);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultScreen(),
+        builder: (context) => ResultScreen(
+          data: speed,
+          time: 3,
+        ),
       ),
     );
   }
@@ -94,46 +106,85 @@ class _TestScreenState extends State<TestScreen> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
+            Column(
               children: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.chevron_left_rounded),
-                )
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 25, 20, 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            icon: const Icon(
+                              Icons.chevron_left_rounded,
+                              size: 28,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(left: 15, top: 2),
+                            child: Text(
+                              'Test',
+                              style: TextStyle(fontSize: 21),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            'Time:  ' + _start.toString(),
+                            style: const TextStyle(
+                                fontSize: 16, letterSpacing: 1.4),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+                            child: IconButton(
+                              onPressed: () {},
+                              icon: const Icon(Icons.volume_up_rounded),
+                            ),
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.restart_alt_rounded),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                const Divider(),
               ],
             ),
-            const Spacer(),
             FractionallySizedBox(
-              widthFactor: 0.7,
+              widthFactor: 0.8,
               child: Column(
                 children: [
-                  Text(_start.toString()),
                   FutureBuilder(
                     future: loadFile(),
                     builder: (context, AsyncSnapshot<List<String>> snapshot) {
                       if (snapshot.hasData) {
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 20, bottom: 50),
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                for (var i = 0;
-                                    i <= snapshot.data!.length - 2;
-                                    i++)
-                                  TText(
-                                    text: snapshot.data![i],
-                                    numb: i,
-                                    refresh: endOne,
-                                    last: i == snapshot.data!.length - 2,
-                                  ),
-                              ],
-                            ),
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              for (var i = 0;
+                                  i <= snapshot.data!.length - 2;
+                                  i++)
+                                TText(
+                                  text: snapshot.data![i],
+                                  numb: i,
+                                  refresh: endOne,
+                                  last: i == snapshot.data!.length - 2,
+                                ),
+                            ],
                           ),
                         );
                       } else {
@@ -144,7 +195,18 @@ class _TestScreenState extends State<TestScreen> {
                 ],
               ),
             ),
-            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: const [
+                Padding(
+                  padding: EdgeInsets.all(35),
+                  child: Text(
+                    'Line: 2, 14',
+                    style: TextStyle(fontSize: 16, letterSpacing: 1.5),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
@@ -233,9 +295,23 @@ class _TTextState extends State<TText> {
             } else {
               now = '';
             }
+            int errors = 0;
+            for (var i = 0; i < written.length; i++) {
+              if (wanted[i] != written[i]) {
+                errors += 1;
+              }
+            }
+            nowtyp = [written.length, errors];
           }
           if (wanted.length == written.length) {
             setState(() {
+              int errors = 0;
+              for (var i = 0; i < written.length; i++) {
+                if (wanted[i] != written[i]) {
+                  errors += 1;
+                }
+              }
+              speed.add([written.length, errors]);
               done = true;
               write.add(widget.numb);
               active = false;
