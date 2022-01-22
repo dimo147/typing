@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:typing/test.dart';
 import 'package:typing/tests.dart';
+import 'package:typing/train.dart';
+import 'package:typing/training.dart';
 import 'package:typing/window.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,9 +12,13 @@ class ResultScreen extends StatefulWidget {
     Key? key,
     required this.data,
     required this.time,
+    required this.train,
+    required this.type,
   }) : super(key: key);
   List<List<int>> data;
-  int time;
+  double time;
+  bool train;
+  String type;
 
   @override
   _ResultScreenState createState() => _ResultScreenState();
@@ -53,14 +59,17 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 
   inserData() async {
-    final file = await _localFile;
-    file.writeAsString('${widget.time}m, $wpm, $acc\n', mode: FileMode.append);
-    try {
+    if (!widget.train) {
       final file = await _localFile;
-      final contents = await file.readAsString();
-      print(contents);
-    } catch (e) {
-      print(e);
+      file.writeAsString('${widget.time}m, $wpm, $acc\n',
+          mode: FileMode.append);
+      try {
+        final file = await _localFile;
+        final contents = await file.readAsString();
+        print(contents);
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
@@ -137,15 +146,28 @@ class _ResultScreenState extends State<ResultScreen> {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const Tests(),
+                          builder: (context) => Window(
+                            page: widget.train ? 2 : 1,
+                          ),
                         ),
                       );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TestScreen(type: '1m'),
-                        ),
-                      );
+                      if (!widget.train) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TestScreen(type: widget.type),
+                          ),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TrainScreen(
+                              fileNum: int.parse(widget.type.split(' ')[0]),
+                            ),
+                          ),
+                        );
+                      }
                     },
                     child: const Padding(
                       padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
@@ -163,7 +185,9 @@ class _ResultScreenState extends State<ResultScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const Window(),
+                            builder: (context) => Window(
+                              page: widget.train ? 2 : 1,
+                            ),
                           ),
                         );
                       },

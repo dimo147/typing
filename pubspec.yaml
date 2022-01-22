@@ -37,3 +37,6 @@ flutter:
     - assets/short/
     - assets/medium/
     - assets/long/
+    - assets/images/
+    - assets/trainings/
+

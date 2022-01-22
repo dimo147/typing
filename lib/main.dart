@@ -25,7 +25,9 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xffffffff),
       ),
       themeMode: ThemeMode.dark,
-      home: const Window(),
+      home: Window(
+        page: 0,
+      ),
     );
   }
 }

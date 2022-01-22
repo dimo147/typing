@@ -2,6 +2,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:typing/test.dart';
+import 'dart:math';
 import 'dart:io';
 
 class Tests extends StatefulWidget {
@@ -21,19 +22,19 @@ class _TestsState extends State<Tests> {
         child: Column(
           children: [
             TestCard(
-              title: '1 minut Test',
+              title: 'Test',
               type: '1m',
               file: '1.txt',
             ),
             const SizedBox(height: 25),
             TestCard(
-              title: '3 minut Test',
+              title: 'Test',
               type: '3m',
               file: '2.txt',
             ),
             const SizedBox(height: 25),
             TestCard(
-              title: '5 minut Test',
+              title: 'Test',
               type: '5m',
               file: '3.txt',
             ),
@@ -96,21 +97,34 @@ class _TestCardState extends State<TestCard> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: 550, maxHeight: 370),
+      constraints: const BoxConstraints(maxWidth: 600, maxHeight: 390),
       decoration: BoxDecoration(
-        color: const Color(0xFF3D3D3D),
+        color: Colors.black54,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 15, left: 18),
+            padding: const EdgeInsets.only(top: 15, left: 20, bottom: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.white70),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(7.0),
+                      child: Text(widget.type),
+                    ),
+                  ),
+                ),
                 Text(
                   widget.title,
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ],
             ),
@@ -123,14 +137,21 @@ class _TestCardState extends State<TestCard> {
               child: FutureBuilder(
                   future: readData(widget.type),
                   builder: (context, AsyncSnapshot<List<String>> snapshot) {
+                    List<int> a = [];
+                    for (var i = 0; i <= snapshot.data!.length - 1; i++) {
+                      a.add(int.parse(snapshot.data![i].split(',')[1]));
+                    }
+
                     if (snapshot.data!.length <= 1) {
                       return TestChart(
+                        most: 70,
                         data: const [
                           FlSpot(0, 1),
                         ],
                       );
                     } else {
                       return TestChart(
+                        most: a.reduce(max),
                         data: [
                           for (var i = 0; i <= snapshot.data!.length - 1; i++)
                             FlSpot(
@@ -145,31 +166,30 @@ class _TestCardState extends State<TestCard> {
           ),
           const Spacer(),
           Padding(
-            padding: const EdgeInsets.only(right: 15, bottom: 15, top: 0),
+            padding: const EdgeInsets.only(right: 20, bottom: 20, top: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                SizedBox(
-                  width: 80,
-                  height: 35,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.black),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TestScreen(
-                            type: widget.type,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text('start'),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.white,
+                    onPrimary: Colors.black,
                   ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TestScreen(
+                          type: widget.type,
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('start'),
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -177,8 +197,10 @@ class _TestCardState extends State<TestCard> {
 }
 
 class TestChart extends StatefulWidget {
-  TestChart({Key? key, required this.data}) : super(key: key);
+  TestChart({Key? key, required this.data, required this.most})
+      : super(key: key);
   List<FlSpot> data;
+  int most;
 
   @override
   _TestChartState createState() => _TestChartState();
@@ -288,6 +310,12 @@ class _TestChartState extends State<TestChart> {
                 return '60';
               case 70:
                 return '70';
+              case 80:
+                return '80';
+              case 90:
+                return '90';
+              case 100:
+                return '100';
             }
             return '';
           },
@@ -299,9 +327,9 @@ class _TestChartState extends State<TestChart> {
           show: true,
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
-      maxX: 10,
+      maxX: widget.data.length.toDouble() - 1,
       minY: 0,
-      maxY: 70,
+      maxY: widget.most.toDouble() + 10,
       lineBarsData: [
         LineChartBarData(
           spots: widget.data,

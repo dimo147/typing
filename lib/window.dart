@@ -8,7 +8,8 @@ import 'package:typing/tests.dart';
 import 'package:typing/settings.dart';
 
 class Window extends StatefulWidget {
-  const Window({Key? key}) : super(key: key);
+  Window({Key? key, required this.page}) : super(key: key);
+  int page;
 
   @override
   _WindowState createState() => _WindowState();
@@ -22,8 +23,10 @@ class _WindowState extends State<Window> {
         color: borderColor,
         width: 1,
         child: Row(
-          children: const [
-            Navigation(),
+          children: [
+            Navigation(
+              page: widget.page,
+            ),
           ],
         ),
       ),
@@ -32,7 +35,8 @@ class _WindowState extends State<Window> {
 }
 
 class Navigation extends StatefulWidget {
-  const Navigation({Key? key}) : super(key: key);
+  Navigation({Key? key, required this.page}) : super(key: key);
+  int page;
 
   @override
   _NavigationState createState() => _NavigationState();
@@ -46,6 +50,13 @@ class _NavigationState extends State<Navigation> {
     SettingScreen()
   ];
   int selectedIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      selectedIndex = widget.page;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:typing/window.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -12,39 +12,106 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DefaultTextStyle(
-          style: const TextStyle(
-            fontSize: 30.0,
-          ),
-          child: AnimatedTextKit(
-            pause: const Duration(milliseconds: 1500),
-            animatedTexts: [
-              TypewriterAnimatedText(
-                'Learn to type',
-                speed: const Duration(milliseconds: 300),
+    return FractionallySizedBox(
+      widthFactor: 0.92,
+      heightFactor: 0.7,
+      child: Row(
+        children: [
+          Stack(
+            children: [
+              SizedBox(
+                width: 500,
+                height: 1000,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Test Your Typing Skills',
+                      style: TextStyle(
+                        fontSize: 32,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 60,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const SizedBox(width: 5),
+                          const Text(
+                            'Learn to type',
+                            style: TextStyle(fontSize: 32.0),
+                          ),
+                          const SizedBox(width: 10),
+                          DefaultTextStyle(
+                            style: const TextStyle(
+                              fontSize: 28,
+                            ),
+                            child: AnimatedTextKit(
+                              pause: const Duration(seconds: 2),
+                              animatedTexts: [
+                                RotateAnimatedText(
+                                  'Faster',
+                                  duration: const Duration(seconds: 2),
+                                ),
+                                RotateAnimatedText(
+                                  'More Accurate',
+                                  duration: const Duration(seconds: 2),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    const Text(
+                      'Test your typing skills with 1, 3 and 5 minut tests and increase your typing speed and accuracy with trainnings!',
+                      style: TextStyle(
+                        fontSize: 18,
+                        letterSpacing: 1.08,
+                        color: Colors.white70,
+                        wordSpacing: 1.2,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Window(page: 1),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                          primary: Colors.white, onPrimary: Colors.black),
+                      child: const Padding(
+                        padding: EdgeInsets.fromLTRB(5, 10, 5, 10),
+                        child: Text('Start Now'),
+                      ),
+                    )
+                  ],
+                ),
               ),
-              TypewriterAnimatedText(
-                'Train your fingers',
-                speed: const Duration(milliseconds: 300),
-              ),
-              TypewriterAnimatedText(
-                'Test your typing speed',
-                speed: const Duration(milliseconds: 300),
-              ),
-              TypewriterAnimatedText(
-                'Type faster',
-                speed: const Duration(milliseconds: 300),
+              Container(
+                constraints:
+                    const BoxConstraints(maxWidth: 700, maxHeight: 500),
+                margin: const EdgeInsets.only(left: 380),
+                child: RotationTransition(
+                  turns: const AlwaysStoppedAnimation(-50 / 360),
+                  child: Image.asset(
+                    'assets/images/keyboard_1.png',
+                  ),
+                ),
               ),
             ],
-            onTap: () {
-              print("Tap Event");
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

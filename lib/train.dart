@@ -8,38 +8,30 @@ List<int> write = [];
 List<List<int>> speed = [];
 List<int> nowtyp = [];
 
-class TestScreen extends StatefulWidget {
-  TestScreen({
+class TrainScreen extends StatefulWidget {
+  TrainScreen({
     Key? key,
-    required this.type,
+    required this.fileNum,
   }) : super(key: key);
-  String type;
+  int fileNum;
 
   @override
-  _TestScreenState createState() => _TestScreenState();
+  _TrainScreenState createState() => _TrainScreenState();
 }
 
-class _TestScreenState extends State<TestScreen> {
-  Random rnd = Random();
+class _TrainScreenState extends State<TrainScreen> {
   int filenum = 1;
   late Timer timer;
-  int _start = 60;
+  int _start = 0;
 
   void startTimer() {
     const oneSec = Duration(seconds: 1);
     timer = Timer.periodic(
       oneSec,
       (Timer timer) {
-        if (_start == 0) {
-          setState(() {
-            timer.cancel();
-            end();
-          });
-        } else {
-          setState(() {
-            _start--;
-          });
-        }
+        setState(() {
+          _start++;
+        });
       },
     );
   }
@@ -50,14 +42,7 @@ class _TestScreenState extends State<TestScreen> {
     write = [];
     speed = [];
     nowtyp = [];
-    filenum = rnd.nextInt(49) + 1;
-    if (widget.type == '1m') {
-      _start = 60;
-    } else if (widget.type == '3m') {
-      _start = 3 * 60;
-    } else if (widget.type == '5m') {
-      _start = 5 * 60;
-    }
+    filenum = widget.fileNum;
     startTimer();
   }
 
@@ -73,21 +58,21 @@ class _TestScreenState extends State<TestScreen> {
 
   end() {
     speed.add(nowtyp);
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => ResultScreen(
           data: speed,
-          time: int.parse(widget.type[0]).toDouble(),
-          train: false,
-          type: widget.type,
+          time: _start / 60,
+          train: true,
+          type: '${widget.fileNum} train',
         ),
       ),
     );
   }
 
   Future<List<String>> loadFile() async {
-    var a = await rootBundle.loadString('assets/short/$filenum.txt');
+    var a = await rootBundle.loadString('assets/trainings/$filenum.txt');
     var b = a.split('\n');
     return b;
   }
@@ -310,6 +295,10 @@ class _TTextState extends State<TText> {
           }
           if (wanted.length == written.length) {
             setState(() {
+              write.add(widget.numb);
+              visibility = false;
+              active = false;
+              done = true;
               int errors = 0;
               for (var i = 0; i < written.length; i++) {
                 if (wanted[i] != written[i]) {
@@ -317,10 +306,6 @@ class _TTextState extends State<TText> {
                 }
               }
               speed.add([written.length, errors]);
-              done = true;
-              write.add(widget.numb);
-              active = false;
-              visibility = false;
               if (widget.last) {
                 widget.ending();
               }
