@@ -1,6 +1,7 @@
 import 'package:path_provider/path_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:typing/consts.dart';
 import 'package:typing/test.dart';
 import 'dart:math';
 import 'dart:io';
@@ -62,19 +63,9 @@ class TestCard extends StatefulWidget {
 }
 
 class _TestCardState extends State<TestCard> {
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/test.txt');
-  }
-
   Future<List<String>> readData(type) async {
     try {
-      final file = await _localFile;
+      final file = await localFile;
       final contents = await file.readAsLines();
       List<String> a = [];
       for (var i in contents) {
@@ -82,7 +73,7 @@ class _TestCardState extends State<TestCard> {
           a.add(i);
         }
       }
-      return a;
+      return a.length >= 101 ? a.sublist(a.length - 101, a.length) : a;
     } catch (e) {
       return [];
     }
@@ -145,6 +136,7 @@ class _TestCardState extends State<TestCard> {
                     if (snapshot.data!.length <= 1) {
                       return TestChart(
                         most: 70,
+                        min: 0,
                         data: const [
                           FlSpot(0, 1),
                         ],
@@ -152,6 +144,7 @@ class _TestCardState extends State<TestCard> {
                     } else {
                       return TestChart(
                         most: a.reduce(max),
+                        min: a.reduce(min),
                         data: [
                           for (var i = 0; i <= snapshot.data!.length - 1; i++)
                             FlSpot(
@@ -197,10 +190,15 @@ class _TestCardState extends State<TestCard> {
 }
 
 class TestChart extends StatefulWidget {
-  TestChart({Key? key, required this.data, required this.most})
-      : super(key: key);
+  TestChart({
+    Key? key,
+    required this.data,
+    required this.most,
+    required this.min,
+  }) : super(key: key);
   List<FlSpot> data;
   int most;
+  int min;
 
   @override
   _TestChartState createState() => _TestChartState();
@@ -277,6 +275,14 @@ class _TestChartState extends State<TestChart> {
                 return '40';
               case 50:
                 return '50';
+              case 60:
+                return '60';
+              case 70:
+                return '70';
+              case 80:
+                return '80';
+              case 90:
+                return '90';
               case 100:
                 return '100';
             }
@@ -300,14 +306,24 @@ class _TestChartState extends State<TestChart> {
                 return '10';
               case 20:
                 return '20';
+              case 25:
+                return '25';
               case 30:
                 return '30';
+              case 35:
+                return '35';
               case 40:
                 return '40';
+              case 45:
+                return '45';
               case 50:
                 return '50';
+              case 55:
+                return '55';
               case 60:
                 return '60';
+              case 65:
+                return '65';
               case 70:
                 return '70';
               case 80:
@@ -328,8 +344,8 @@ class _TestChartState extends State<TestChart> {
           border: Border.all(color: const Color(0xff37434d), width: 1)),
       minX: 0,
       maxX: widget.data.length.toDouble() - 1,
-      minY: 0,
-      maxY: widget.most.toDouble() + 10,
+      minY: widget.min.toDouble() - 5,
+      maxY: widget.most.toDouble() + 5,
       lineBarsData: [
         LineChartBarData(
           spots: widget.data,

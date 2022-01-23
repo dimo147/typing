@@ -5,7 +5,7 @@ import 'package:typing/window.dart';
 void main() {
   runApp(const MyApp());
   doWhenWindowReady(() {
-    const initialSize = Size(650, 450);
+    const initialSize = Size(1120, 600);
     appWindow.minSize = initialSize;
     appWindow.size = initialSize;
     appWindow.alignment = Alignment.center;

@@ -4,6 +4,8 @@ import 'package:typing/result.dart';
 import 'dart:async';
 import 'dart:math';
 
+import 'package:typing/window.dart';
+
 List<int> write = [];
 List<List<int>> speed = [];
 List<int> nowtyp = [];
@@ -73,7 +75,7 @@ class _TestScreenState extends State<TestScreen> {
 
   end() {
     speed.add(nowtyp);
-    Navigator.push(
+    Navigator.pushReplacement(
       context,
       MaterialPageRoute(
         builder: (context) => ResultScreen(
@@ -98,7 +100,7 @@ class _TestScreenState extends State<TestScreen> {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black87,
+            Color(0xff212121),
             Colors.black,
           ],
           begin: Alignment.topLeft,
@@ -140,7 +142,7 @@ class _TestScreenState extends State<TestScreen> {
                       Row(
                         children: [
                           Text(
-                            'Time:  ' + _start.toString(),
+                            "Time:  ${_start ~/ 60}:${_start % 60}",
                             style: const TextStyle(
                                 fontSize: 16, letterSpacing: 1.4),
                           ),
@@ -152,7 +154,23 @@ class _TestScreenState extends State<TestScreen> {
                             ),
                           ),
                           IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => Window(
+                                    page: 1,
+                                  ),
+                                ),
+                              );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      TestScreen(type: widget.type),
+                                ),
+                              );
+                            },
                             icon: const Icon(Icons.restart_alt_rounded),
                           ),
                         ],
@@ -266,7 +284,7 @@ class _TTextState extends State<TText> {
 
   @override
   Widget build(BuildContext context) {
-    if (write.contains(widget.numb - 1)) {
+    if (write.contains(widget.numb - 1) || widget.numb == 0) {
       FocusScope.of(context).requestFocus(focusNode);
       active = true;
     }
@@ -281,7 +299,10 @@ class _TTextState extends State<TText> {
         onKey: (event) {
           if (event.runtimeType == RawKeyDownEvent &&
               written.length != wanted.length) {
-            if (event.physicalKey.debugName == 'Backspace') {
+            print(event.logicalKey.debugName);
+            print(event.physicalKey.debugName);
+            print(event.character);
+            if (event.logicalKey.debugName == 'Backspace') {
               if (written.isNotEmpty) {
                 setState(() {
                   written = written.substring(0, written.length - 1);
@@ -366,7 +387,7 @@ class _TTextState extends State<TText> {
             ],
           ),
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             letterSpacing: 2,
           ),
         ),

@@ -1,8 +1,7 @@
 import 'dart:io';
+import 'package:typing/consts.dart';
 import 'package:typing/test.dart';
-import 'package:typing/tests.dart';
 import 'package:typing/train.dart';
-import 'package:typing/training.dart';
 import 'package:typing/window.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,6 +26,7 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreenState extends State<ResultScreen> {
   int wpm = 0;
   int acc = 0;
+  int stars = 0;
   @override
   void initState() {
     super.initState();
@@ -46,25 +46,24 @@ class _ResultScreenState extends State<ResultScreen> {
       acc = accuracy;
     });
     inserData();
-  }
-
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
-  }
-
-  Future<File> get _localFile async {
-    final path = await _localPath;
-    return File('$path/test.txt');
+    if (acc >= 90 && wpm >= 20) {
+      stars += 1;
+    }
+    if (acc >= 95 && wpm >= 25) {
+      stars += 1;
+    }
+    if (wpm >= 30) {
+      stars += 1;
+    }
   }
 
   inserData() async {
     if (!widget.train) {
-      final file = await _localFile;
-      file.writeAsString('${widget.time}m, $wpm, $acc\n',
+      final file = await localFile;
+      file.writeAsString('${widget.time.toInt()}m, $wpm, $acc\n',
           mode: FileMode.append);
       try {
-        final file = await _localFile;
+        final file = await localFile;
         final contents = await file.readAsString();
         print(contents);
       } catch (e) {
@@ -79,7 +78,7 @@ class _ResultScreenState extends State<ResultScreen> {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black87,
+            Color(0xff212121),
             Colors.black,
           ],
           begin: Alignment.topLeft,
@@ -95,17 +94,7 @@ class _ResultScreenState extends State<ResultScreen> {
               const Spacer(
                 flex: 2,
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AnimatedStar(del: 50),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 50),
-                    child: AnimatedStar(del: 700),
-                  ),
-                  AnimatedStar(del: 1200),
-                ],
-              ),
+              StarRow(stars: stars),
               const SizedBox(
                 height: 50,
               ),
@@ -225,9 +214,48 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 }
 
+class StarRow extends StatefulWidget {
+  StarRow({Key? key, required this.stars}) : super(key: key);
+  int stars;
+
+  @override
+  _StarRowState createState() => _StarRowState();
+}
+
+class _StarRowState extends State<StarRow> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AnimatedStar(
+          del: 50,
+          fill: widget.stars >= 1,
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 50),
+          child: AnimatedStar(
+            del: 700,
+            fill: widget.stars >= 2,
+          ),
+        ),
+        AnimatedStar(
+          del: 1200,
+          fill: widget.stars == 3,
+        ),
+      ],
+    );
+  }
+}
+
 class AnimatedStar extends StatefulWidget {
-  AnimatedStar({Key? key, required this.del}) : super(key: key);
+  AnimatedStar({
+    Key? key,
+    required this.del,
+    required this.fill,
+  }) : super(key: key);
   int del;
+  bool fill;
 
   @override
   _AnimatedStarState createState() => _AnimatedStarState();
@@ -267,7 +295,10 @@ class _AnimatedStarState extends State<AnimatedStar>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Stars(del: widget.del),
+          Stars(
+            del: widget.del,
+            fill: widget.fill,
+          ),
         ],
       ),
     );
@@ -275,8 +306,9 @@ class _AnimatedStarState extends State<AnimatedStar>
 }
 
 class Stars extends StatefulWidget {
-  Stars({Key? key, required this.del}) : super(key: key);
+  Stars({Key? key, required this.del, required this.fill}) : super(key: key);
   int del;
+  bool fill;
 
   @override
   _StarsState createState() => _StarsState();
@@ -303,8 +335,8 @@ class _StarsState extends State<Stars> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return RotationTransition(
       turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-      child: const Icon(
-        Icons.star,
+      child: Icon(
+        widget.fill ? Icons.star : Icons.star_border,
         size: 100,
         color: Colors.yellow,
       ),

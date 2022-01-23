@@ -48,15 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontSize: 28,
                             ),
                             child: AnimatedTextKit(
-                              pause: const Duration(seconds: 2),
+                              pause: const Duration(milliseconds: 1500),
                               animatedTexts: [
                                 RotateAnimatedText(
                                   'Faster',
                                   duration: const Duration(seconds: 2),
                                 ),
-                                RotateAnimatedText(
+                                TypewriterAnimatedText(
                                   'More Accurate',
-                                  duration: const Duration(seconds: 2),
+                                  speed: const Duration(milliseconds: 200),
                                 ),
                               ],
                             ),
@@ -98,9 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               Container(
-                constraints:
-                    const BoxConstraints(maxWidth: 700, maxHeight: 500),
-                margin: const EdgeInsets.only(left: 380),
+                margin: const EdgeInsets.only(left: 300),
                 child: RotationTransition(
                   turns: const AlwaysStoppedAnimation(-50 / 360),
                   child: Image.asset(

@@ -1,0 +1,28 @@
+name: typing
+version: 0.1.0
+summary: Typing test app
+description: tping test app to test your typing skills
+
+confinement: strict
+base: core18
+grade: stable
+
+slots:
+  dbus-typing:
+    interface: dbus
+    bus: session
+    name: org.bar.typing
+    
+apps:
+  typing:
+    command: typing
+    extensions: [flutter-master]
+    plugs:
+    - network
+    slots:
+      - dbus-typing
+parts:
+  typing:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart

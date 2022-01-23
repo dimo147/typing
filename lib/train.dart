@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:typing/result.dart';
 import 'dart:async';
-import 'dart:math';
 
 List<int> write = [];
 List<List<int>> speed = [];
@@ -83,7 +82,7 @@ class _TrainScreenState extends State<TrainScreen> {
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Colors.black87,
+            Color(0xff212121),
             Colors.black,
           ],
           begin: Alignment.topLeft,
@@ -125,7 +124,7 @@ class _TrainScreenState extends State<TrainScreen> {
                       Row(
                         children: [
                           Text(
-                            'Time:  ' + _start.toString(),
+                            "Time:  ${_start ~/ 60}:${_start % 60}",
                             style: const TextStyle(
                                 fontSize: 16, letterSpacing: 1.4),
                           ),
@@ -251,7 +250,7 @@ class _TTextState extends State<TText> {
 
   @override
   Widget build(BuildContext context) {
-    if (write.contains(widget.numb - 1)) {
+    if (write.contains(widget.numb - 1) || widget.numb == 0) {
       FocusScope.of(context).requestFocus(focusNode);
       active = true;
     }
@@ -266,7 +265,7 @@ class _TTextState extends State<TText> {
         onKey: (event) {
           if (event.runtimeType == RawKeyDownEvent &&
               written.length != wanted.length) {
-            if (event.physicalKey.debugName == 'Backspace') {
+            if (event.logicalKey.debugName == 'Backspace') {
               if (written.isNotEmpty) {
                 setState(() {
                   written = written.substring(0, written.length - 1);
@@ -351,7 +350,7 @@ class _TTextState extends State<TText> {
             ],
           ),
           style: const TextStyle(
-            fontSize: 18,
+            fontSize: 20,
             letterSpacing: 2,
           ),
         ),

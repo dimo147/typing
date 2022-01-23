@@ -88,6 +88,7 @@ class _NavigationState extends State<Navigation> {
                   Container(
                     constraints: const BoxConstraints(maxWidth: 190),
                     child: SideNavigationBar(
+                      initiallyExpanded: false,
                       theme: SideNavigationBarTheme(
                         backgroundColor: Colors.transparent,
                         itemTheme: ItemTheme(
@@ -113,10 +114,10 @@ class _NavigationState extends State<Navigation> {
                           icon: Icons.keyboard,
                           label: 'Training',
                         ),
-                        SideNavigationBarItem(
-                          icon: Icons.settings,
-                          label: 'Settings',
-                        ),
+                        // SideNavigationBarItem(
+                        //   icon: Icons.settings,
+                        //   label: 'Settings',
+                        // ),
                       ],
                       onTap: (index) {
                         setState(() {
