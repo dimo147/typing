@@ -16,7 +16,7 @@ slots:
 apps:
   typing:
     command: typing
-    extensions: [flutter-master]
+    extensions: [flutter-stable]
     plugs:
     - network
     slots:

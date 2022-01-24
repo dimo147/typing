@@ -4,7 +4,6 @@ import 'package:typing/test.dart';
 import 'package:typing/train.dart';
 import 'package:typing/window.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 
 class ResultScreen extends StatefulWidget {
   ResultScreen({
@@ -62,13 +61,6 @@ class _ResultScreenState extends State<ResultScreen> {
       final file = await localFile;
       file.writeAsString('${widget.time.toInt()}m, $wpm, $acc\n',
           mode: FileMode.append);
-      try {
-        final file = await localFile;
-        final contents = await file.readAsString();
-        print(contents);
-      } catch (e) {
-        print(e);
-      }
     }
   }
 

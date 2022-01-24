@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 const borderColor = Color(0xFF3FC416);
 const backgroundStartColor = Colors.black87;
@@ -38,7 +37,6 @@ class WindowButtons extends StatelessWidget {
 }
 
 Future<String> get _localPath async {
-  print(await getApplicationSupportDirectory());
   final directory = await getApplicationSupportDirectory();
   return directory.path;
 }

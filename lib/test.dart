@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:typing/window.dart';
 import 'package:typing/result.dart';
 import 'dart:async';
 import 'dart:math';
-
-import 'package:typing/window.dart';
 
 List<int> write = [];
 List<List<int>> speed = [];
@@ -299,9 +298,6 @@ class _TTextState extends State<TText> {
         onKey: (event) {
           if (event.runtimeType == RawKeyDownEvent &&
               written.length != wanted.length) {
-            print(event.logicalKey.debugName);
-            print(event.physicalKey.debugName);
-            print(event.character);
             if (event.logicalKey.debugName == 'Backspace') {
               if (written.isNotEmpty) {
                 setState(() {

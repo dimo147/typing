@@ -1,11 +1,11 @@
 import 'package:side_navigation/side_navigation.dart';
 import 'package:bitsdojo_window/bitsdojo_window.dart';
 import 'package:flutter/material.dart';
-import 'package:typing/consts.dart';
-import 'package:typing/home.dart';
 import 'package:typing/training.dart';
-import 'package:typing/tests.dart';
 import 'package:typing/settings.dart';
+import 'package:typing/consts.dart';
+import 'package:typing/tests.dart';
+import 'package:typing/home.dart';
 
 class Window extends StatefulWidget {
   Window({Key? key, required this.page}) : super(key: key);

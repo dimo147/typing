@@ -1,10 +1,8 @@
-import 'package:path_provider/path_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:typing/consts.dart';
 import 'package:typing/test.dart';
 import 'dart:math';
-import 'dart:io';
 
 class Tests extends StatefulWidget {
   const Tests({Key? key}) : super(key: key);
